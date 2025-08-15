@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:meta/meta_meta.dart';
 
-final _$lib = Uri(scheme: 'package', path: 'oflutter/annotate_name.dart');
+final _$lib = Uri(scheme: 'package', path: 'oflutter_name/annotation.dart');
 
 class GenerateNameBase {
   const GenerateNameBase({required this.prefix});
