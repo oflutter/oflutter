@@ -5,6 +5,7 @@ environment: { sdk: ^3.8.1 }
 dev_dependencies: { oflutter: ^0.0.0 }
 
 workspace:
+  - example
   - oflutter
   - oflutter_anno
   - oflutter_name

@@ -9,6 +9,7 @@ environment:
   flutter: ">=3.32.8"
 
 dependencies:
+  args: ^2.7.0
   flutter: { sdk: flutter }
   oflutter_anno: ^0.0.0
   oflutter_name: ^0.0.0
