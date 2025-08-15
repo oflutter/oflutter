@@ -26,11 +26,19 @@
   // Code spell checker (require recommended extensions).
   "cSpell.ignorePaths": [".dart_tool", "pubspec.lock"],
   "cSpell.words": [
+    "combinators",
     "esbenp",
     "foxundermoon",
+    "futureor",
+    "interps",
+    "ints",
+    "nonobvious",
+    "oflutter",
     "pubignore",
     "pubspec",
     "swiftpm",
-    "symbolication"
+    "symbolication",
+    "tearoffs",
+    "unawaited"
   ]
 }

@@ -1,2 +1,8 @@
-name: _
+name: oflutter_workspace
+version: 0.0.0
+publish_to: none
 environment: { sdk: ^3.8.1 }
+dev_dependencies: { oflutter: ^0.0.0 }
+
+workspace:
+  - oflutter
