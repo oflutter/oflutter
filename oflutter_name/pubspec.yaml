@@ -1,5 +1,5 @@
 name: oflutter_name
-description: A starting point for Dart libraries or applications.
+description: Generate names, library identifiers, and type identifiers.
 version: 0.0.0
 resolution: workspace
 repository: https://github.com/oflutter/oflutter
