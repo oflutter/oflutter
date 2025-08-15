@@ -1,0 +1,7 @@
+name: oflutter_anno
+description: Annotations for OFlutter related code generating.
+version: 0.0.0
+resolution: workspace
+repository: https://github.com/oflutter/oflutter
+
+environment: { sdk: ^3.8.1 }
