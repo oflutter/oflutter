@@ -11,8 +11,10 @@ environment:
 dependencies:
   flutter: { sdk: flutter }
   oflutter_anno: ^0.0.0
+  oflutter_name: ^0.0.0
 
 dev_dependencies:
+  build_runner: ^2.7.0
   flutter_test: { sdk: flutter }
 
 flutter:
