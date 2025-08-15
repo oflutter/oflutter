@@ -1,0 +1,4 @@
+targets:
+  $default:
+    builders:
+      oflutter_name|name_builder: { enabled: true }

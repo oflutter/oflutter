@@ -4,4 +4,11 @@ version: 0.0.0
 resolution: workspace
 repository: https://github.com/oflutter/oflutter
 
-environment: { sdk: ^3.8.1 }
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  oflutter_name: ^0.0.0
+
+dev_dependencies:
+  build_runner: ^2.7.0
