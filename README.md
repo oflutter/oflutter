@@ -1,3 +1,3 @@
-# OFlutter
+# OFlutter Workspace
 
-Optimizations for the original Flutter framework.
+Monorepo of the OFlutter framework.
