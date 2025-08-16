@@ -1,8 +1,48 @@
+targets:
+  $default:
+    builders:
+      oflutter|name_builder: { enabled: true }
+      oflutter|wrap_builder: { enabled: true }
+      oflutter|build_in_wrap_builder: { enabled: true }
+
 builders:
+  wrap_builder:
+    import: package:oflutter/builder.dart
+    builder_factories: [wrapBuilder]
+    build_extensions: { ".dart": [".wrap.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  build_in_wrap_builder:
+    import: package:oflutter/builder.dart
+    builder_factories: [buildInWrapBuilder]
+    build_extensions: { ".dart": [".$wrap.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  # Following builders are redirected from package:oflutter_name.
   name_builder:
     import: package:oflutter/builder.dart
     builder_factories: [nameBuilder]
     build_extensions: { ".dart": [".name.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  type_builder:
+    import: package:oflutter/builder.dart
+    builder_factories: [typeBuilder]
+    build_extensions: { ".dart": [".type.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  build_in_type_builder:
+    import: package:oflutter/builder.dart
+    builder_factories: [buildInTypeBuilder]
+    build_extensions: { ".dart": [".$type.g.dart"] }
     auto_apply: none
     build_to: source
     applies_builders: ["source_gen|combining_builder"]

@@ -1,12 +1,22 @@
+import 'package:meta/meta_meta.dart';
 import 'package:oflutter_name/annotation.dart';
 
 part 'annotate_wrap.name.g.dart';
+part 'annotate_wrap.type.g.dart';
 
 const wrap = GenerateWrap();
+const wrapBuildIn = GenerateBuildInWrap();
 
+@Target({TargetKind.constructor})
 @type
 class GenerateWrap {
-  const GenerateWrap({this.extensionName, this.methodName});
+  const GenerateWrap({
+    this.extensionName,
+    this.methodName,
+    this.methodNamePrefix,
+    this.targetParameterName = 'child',
+    this.removeDeprecated = true,
+  });
 
   @name
   final String? extensionName;
@@ -14,7 +24,33 @@ class GenerateWrap {
   @name
   final String? methodName;
 
+  @name
+  final String? methodNamePrefix;
+
+  @name
+  final String targetParameterName;
+
+  @name
+  final bool removeDeprecated;
+
   static final TypeIdentifier $type = _$type$generateWrap;
   static const String $extensionName = _$name$extensionName;
   static const String $methodName = _$name$methodName;
+  static const String $methodNamePrefix = _$name$methodNamePrefix;
+  static const String $targetParameterName = _$name$targetParameterName;
+  static const String $removeDeprecated = _$name$removeDeprecated;
+}
+
+@Target({TargetKind.topLevelVariable})
+@type
+class GenerateBuildInWrap extends GenerateWrap {
+  const GenerateBuildInWrap({
+    super.extensionName,
+    super.methodName,
+    super.methodNamePrefix,
+    super.targetParameterName,
+    super.removeDeprecated,
+  });
+
+  static final TypeIdentifier $type = _$type$generateBuildInWrap;
 }
