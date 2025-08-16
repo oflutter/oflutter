@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:build/build.dart';
 import 'package:oflutter/annotation.dart';
@@ -123,28 +122,12 @@ class WrapGenerator extends GenerateOnAnnotation
   ) => GenerateComponentResult.content('${element.name3}: ${element.name3}');
 }
 
-class BuildInWrapGenerator extends WrapGenerator with GenerateTopLevelVariable {
+class BuildInWrapGenerator extends WrapGenerator
+    with GenerateTopLevelVariable, GenerateVariableEntries {
   const BuildInWrapGenerator();
 
   @override
   TypeIdentifier get annotationType => GenerateBuildInWrap.$type;
-
-  @override
-  FutureOr<GenerateComponentResult> generateTopLevelVariable(
-    TopLevelVariableElement2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) {
-    switch (element.constantInitializer) {
-      case final ConstructorReference _:
-        if (element.computeConstantValue()?.toFunctionValue2()?.baseElement
-            case final ConstructorElement2 element) {
-          return generateConstructor(element, annotation, buildStep);
-        }
-        throw Exception('returned value not a constructor: $element');
-    }
-    return const GenerateComponentResult.content('// top level variable');
-  }
 
   @override
   FutureOr<GenerateComponentResult> generateConstructor(

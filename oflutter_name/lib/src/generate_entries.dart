@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element2.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
@@ -73,6 +74,29 @@ mixin GenerateTopLevelVariable on GenerateOnAnnotation {
     ConstantReader annotation,
     BuildStep buildStep,
   );
+}
+
+mixin GenerateVariableEntries on GenerateConstructor, GenerateTopLevelVariable {
+  @override
+  FutureOr<GenerateComponentResult> generateTopLevelVariable(
+    TopLevelVariableElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) async {
+    final value = element.computeConstantValue();
+    if (value?.toFunctionValue2()?.baseElement
+        case final ConstructorElement2 element) {
+      return generateConstructor(element, annotation, buildStep);
+    } else if (value?.toSetValue() case final Set<DartObject> items) {
+      final tasks = items
+          .map((item) => item.toFunctionValue2())
+          .whereType<ConstructorElement2>()
+          .map((e) => generateConstructor(e, annotation, buildStep))
+          .map(Future.value);
+      return (await Future.wait(tasks)).joinAsComponent();
+    }
+    throw Exception('returned value not constructor or set: $element');
+  }
 }
 
 mixin GenerateStreamConstructor on GenerateConstructor {
