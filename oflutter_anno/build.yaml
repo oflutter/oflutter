@@ -2,3 +2,5 @@ targets:
   $default:
     builders:
       oflutter_name|name_builder: { enabled: true }
+      oflutter_name|type_builder: { enabled: true }
+      oflutter_name|build_in_type_builder: { enabled: true }
