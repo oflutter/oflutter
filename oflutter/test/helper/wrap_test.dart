@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:oflutter/helper.dart';
 
 void main() {
-  testWidgets('wrap text media', (t) async {
+  testWidgets('${WrapEnvironment.$$name}: ensure text', (t) async {
     const message = 'message';
     final probe = Builder(
       builder: (context) {
@@ -18,7 +18,7 @@ void main() {
     expect(find.text(message), findsOneWidget);
   });
 
-  testWidgets('ensure text', (t) async {
+  testWidgets('${EnsureText.$$name}: validate', (t) async {
     const message = 'message';
     await t.pumpWidget(message.asText().ensureText());
     expect(find.text(message), findsOneWidget);

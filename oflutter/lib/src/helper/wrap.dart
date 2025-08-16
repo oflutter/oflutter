@@ -2,9 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:oflutter/annotation.dart';
 
+part 'wrap.name.g.dart';
 part 'wrap.wrap.g.dart';
 
+@name
 extension WrapEnvironment on Widget {
+  static const String $$name = _$name$wrapEnvironment;
+
   MediaQuery media(MediaQueryData data, {Key? key}) {
     return MediaQuery(key: key, data: data, child: this);
   }
@@ -18,6 +22,7 @@ extension WrapEnvironment on Widget {
   }
 }
 
+@name
 class EnsureText extends StatelessWidget {
   @wrap
   const EnsureText({
@@ -25,6 +30,8 @@ class EnsureText extends StatelessWidget {
     this.defaultDirection = TextDirection.ltr,
     required this.child,
   });
+
+  static const String $$name = _$name$ensureText;
 
   final TextDirection defaultDirection;
   final Widget child;

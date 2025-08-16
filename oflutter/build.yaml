@@ -1,6 +1,7 @@
 targets:
   $default:
     builders:
+      oflutter|name_builder: { enabled: true }
       oflutter|wrap_builder: { enabled: true }
       oflutter|build_in_wrap_builder: { enabled: true }
 
