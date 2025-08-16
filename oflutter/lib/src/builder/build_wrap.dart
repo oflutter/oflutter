@@ -103,9 +103,14 @@ class WrapGenerator extends GenerateOnAnnotation
     BuildStep buildStep,
   ) async {
     final targetName = this.targetName(annotation);
+    final isTargetNamed = element.formalParameters
+        .firstWhere((p) => p.name3 == targetName)
+        .isNamed;
+
     final result = await super.generateOutputs(element, annotation, buildStep);
     final prefix = result.content.isEmpty ? '' : ', ';
-    return result + GenerateComponentResult.content('$prefix$targetName: this');
+    final target = '${isTargetNamed ? '$targetName: ' : ''}this';
+    return result + GenerateComponentResult.content('$prefix$target');
   }
 
   @override
