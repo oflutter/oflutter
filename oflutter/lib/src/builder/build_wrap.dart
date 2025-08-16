@@ -12,26 +12,12 @@ Builder wrapBuilder(BuilderOptions options) => LibraryBuilder(
   generatedExtension: '.wrap.g.dart',
 );
 
-Builder buildInWrapBuilder(BuilderOptions options) => LibraryBuilder(
-  const GenerateBuildInWrapLibrary(),
-  generatedExtension: r'.$wrap.g.dart',
-);
-
 class GenerateWrapLibrary extends Top2AnnotationGenerator {
   const GenerateWrapLibrary();
 
   @override
   Iterable<GenerateOnAnnotationAnywhere> get generators => [
     const WrapGenerator(),
-  ];
-}
-
-class GenerateBuildInWrapLibrary extends TopAnnotationGenerator {
-  const GenerateBuildInWrapLibrary();
-
-  @override
-  Iterable<GenerateOnAnnotationAnywhere> get generators => [
-    const BuildInWrapGenerator(),
   ];
 }
 
@@ -150,65 +136,4 @@ class WrapGenerator extends GenerateOnAnnotation
   FutureOr<GenerateComponentResult> generateOutput(
     FormalParameterElement element,
   ) => GenerateComponentResult.content('${element.name3}: ${element.name3}');
-}
-
-class BuildInWrapGenerator extends WrapGenerator
-    with GenerateTopLevelVariable, GenerateVariableConstructorEntries {
-  const BuildInWrapGenerator();
-
-  @override
-  TypeIdentifier get annotationType => GenerateBuildInWrap.$type;
-
-  @override
-  FutureOr<GenerateComponentResult> generateConstructor(
-    ConstructorElement2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) async {
-    final result = super.generateConstructor(element, annotation, buildStep);
-    final type = element.returnType.typeIdentifier;
-    const ignoreLints =
-        '// '
-        'ignore_for_file: unnecessary_import, '
-        'implementation_imports '
-        'generated.\n';
-
-    return (await result).appendDirectives({
-      ignoreLints,
-      if (!type.isDartCore) type.importExpression,
-    });
-  }
-
-  @override
-  FutureOr<GenerateComponentResult> generateTarget(
-    ConstructorElement2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) {
-    final type = targetParameter(
-      element,
-      annotation,
-      buildStep,
-    ).type.typeIdentifier;
-
-    return GenerateComponentResult(
-      directives: {if (!type.isDartCore) type.importExpression},
-      content: type.name,
-    );
-  }
-
-  @override
-  FutureOr<(GenerateComponentResult, bool)> generateInput(
-    FormalParameterElement element,
-  ) {
-    final type = element.type.typeIdentifier;
-    final content = element.toString().unwrapCurlyBrace;
-    return (
-      GenerateComponentResult(
-        directives: {if (!type.isDartCore) type.importExpression},
-        content: content,
-      ),
-      element.isNamed,
-    );
-  }
 }
