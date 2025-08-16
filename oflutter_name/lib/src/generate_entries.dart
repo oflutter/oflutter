@@ -132,18 +132,18 @@ mixin GenerateStreamConstructor on GenerateConstructor {
     final directives = <String>{};
     final namedItems = <String>[];
     final unnamedItems = <String>[];
-    final results = element.formalParameters.map(
-      (parameter) => Future.value(generateInput(parameter)),
-    );
-
+    final inputParams = await filterInputs(element, annotation, buildStep);
+    final results = inputParams.map((p) => Future.value(generateInput(p)));
     for (final (result, named) in await Future.wait(results)) {
       directives.addAll(result.directives);
       named ? namedItems.add(result.content) : unnamedItems.add(result.content);
     }
 
+    final unnamed = unnamedItems.isEmpty ? '' : '${unnamedItems.join(', ')}, ';
+    final named = namedItems.isEmpty ? '' : '{${namedItems.join(', ')}}';
     return GenerateComponentResult(
       directives: directives,
-      content: '${unnamedItems.join(', ')}, {${namedItems.join(', ')}}',
+      content: '$unnamed$named',
     );
   }
 
@@ -151,9 +151,23 @@ mixin GenerateStreamConstructor on GenerateConstructor {
     ConstructorElement2 element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) async => (await Future.wait(
-    element.formalParameters.map((p) => Future.value(generateOutput(p))),
-  )).joinAsComponent(',');
+  ) async {
+    final outputParams = await filterOutputs(element, annotation, buildStep);
+    final results = outputParams.map((p) => Future.value(generateOutput(p)));
+    return (await Future.wait(results)).joinAsComponent(',');
+  }
+
+  FutureOr<Iterable<FormalParameterElement>> filterInputs(
+    ConstructorElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) => element.formalParameters;
+
+  FutureOr<Iterable<FormalParameterElement>> filterOutputs(
+    ConstructorElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) => element.formalParameters;
 
   /// The bool value means whether named.
   FutureOr<(GenerateComponentResult, bool)> generateInput(

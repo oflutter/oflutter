@@ -1,8 +1,21 @@
+targets:
+  $default:
+    builders:
+      oflutter|wrap_builder: { enabled: true }
+
 builders:
   name_builder:
     import: package:oflutter/builder.dart
     builder_factories: [nameBuilder]
     build_extensions: { ".dart": [".name.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  wrap_builder:
+    import: package:oflutter/builder.dart
+    builder_factories: [wrapBuilder]
+    build_extensions: { ".dart": [".wrap.g.dart"] }
     auto_apply: none
     build_to: source
     applies_builders: ["source_gen|combining_builder"]

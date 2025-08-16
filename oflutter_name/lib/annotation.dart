@@ -22,6 +22,9 @@ class TypeIdentifier {
   static const $lib = 'lib';
   static final $type = TypeIdentifier(name: 'TypeIdentifier', lib: _$lib);
 
+  String get importExpression => "import '$lib';";
+  String get exportExpression => "export '$lib' show $name;";
+
   @override
   bool operator ==(Object other) {
     return other is TypeIdentifier && other.name == name && other.lib == lib;

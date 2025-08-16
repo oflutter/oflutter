@@ -17,3 +17,5 @@ const _$name$extensionName = 'extensionName';
 const _$name$methodName = 'methodName';
 
 const _$name$methodNamePrefix = 'methodNamePrefix';
+
+const _$name$targetParameterName = 'targetParameterName';

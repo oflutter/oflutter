@@ -1,3 +1,29 @@
+extension PrefixAndSuffix on String {
+  String removePrefix(String prefix) {
+    return startsWith(prefix) ? substring(prefix.length) : this;
+  }
+
+  String removeSuffix(String suffix) {
+    return endsWith(suffix) ? substring(0, length - suffix.length) : this;
+  }
+
+  String ensurePrefix(String prefix) {
+    return startsWith(prefix) ? this : '$prefix$this';
+  }
+
+  String ensureSuffix(String suffix) {
+    return endsWith(suffix) ? this : '$this$suffix';
+  }
+
+  String get unwrapParenthesis => removePrefix('(').removeSuffix(')');
+  String get unwrapBracket => removePrefix('[').removeSuffix(']');
+  String get unwrapCurlyBrace => removePrefix('{').removeSuffix('}');
+  String get unwrapAngle => removePrefix('<').removeSuffix('>');
+  String get unwrapQuote => removePrefix('"').removeSuffix('"');
+  String get unwrapSingleQuote => removePrefix("'").removeSuffix("'");
+  String get unwrapBacktick => removePrefix('`').removeSuffix('`');
+}
+
 extension CaseConvert on String {
   /// Split string into parts according to their case.
   ///
