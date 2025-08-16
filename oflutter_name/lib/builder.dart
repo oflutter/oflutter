@@ -42,7 +42,7 @@ class NameGenerator extends GenerateOnAnnotationAnywhere {
 
     final varName = '$prefix${element.displayName.camelCase}';
     final result = element.name3 ?? '';
-    return GenerateComponentResult(content: "const $varName = '$result';");
+    return GenerateComponentResult.content("const $varName = '$result';");
   }
 }
 
@@ -67,12 +67,12 @@ class LibGenerator extends GenerateOnAnnotationAnywhere {
     if (uri == null) throw Exception('cannot parse uri of $element');
 
     final expression = "Uri(scheme: '${uri.scheme}', path: '${uri.path}')";
-    return GenerateComponentResult(content: 'final $varName = $expression;');
+    return GenerateComponentResult.content('final $varName = $expression;');
   }
 }
 
 class TypeGenerator extends GenerateOnAnnotation
-    with GenerateAnnotatedClass, GenerateAnnotatedGetter {
+    with GenerateClass, GenerateGetter {
   const TypeGenerator();
 
   @override
@@ -117,6 +117,6 @@ class TypeGenerator extends GenerateOnAnnotation
         "    path: '${uri.path}', "
         '  ), '
         ')';
-    return GenerateComponentResult(content: 'final $varName = $expression;');
+    return GenerateComponentResult.content('final $varName = $expression;');
   }
 }

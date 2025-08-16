@@ -6,7 +6,11 @@ const wrap = GenerateWrap();
 
 @type
 class GenerateWrap {
-  const GenerateWrap({this.extensionName, this.methodName});
+  const GenerateWrap({
+    this.extensionName,
+    this.methodName,
+    this.methodNamePrefix,
+  });
 
   @name
   final String? extensionName;
@@ -14,7 +18,11 @@ class GenerateWrap {
   @name
   final String? methodName;
 
+  @name
+  final String? methodNamePrefix;
+
   static final TypeIdentifier $type = _$type$generateWrap;
   static const String $extensionName = _$name$extensionName;
   static const String $methodName = _$name$methodName;
+  static const String $methodNamePrefix = _$name$methodNamePrefix;
 }

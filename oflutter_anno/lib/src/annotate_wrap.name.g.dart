@@ -15,3 +15,5 @@ final _$type$generateWrap = TypeIdentifier(
 const _$name$extensionName = 'extensionName';
 
 const _$name$methodName = 'methodName';
+
+const _$name$methodNamePrefix = 'methodNamePrefix';
