@@ -6,3 +6,19 @@ builders:
     auto_apply: none
     build_to: source
     applies_builders: ["source_gen|combining_builder"]
+
+  type_builder:
+    import: package:oflutter_name/builder.dart
+    builder_factories: [typeBuilder]
+    build_extensions: { ".dart": [".type.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]
+
+  build_in_type_builder:
+    import: package:oflutter_name/builder.dart
+    builder_factories: [buildInTypeBuilder]
+    build_extensions: { ".dart": [".$type.g.dart"] }
+    auto_apply: none
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]

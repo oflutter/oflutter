@@ -76,7 +76,8 @@ mixin GenerateTopLevelVariable on GenerateOnAnnotation {
   );
 }
 
-mixin GenerateVariableEntries on GenerateConstructor, GenerateTopLevelVariable {
+mixin GenerateVariableConstructorEntries
+    on GenerateConstructor, GenerateTopLevelVariable {
   @override
   FutureOr<GenerateComponentResult> generateTopLevelVariable(
     TopLevelVariableElement2 element,
@@ -95,7 +96,7 @@ mixin GenerateVariableEntries on GenerateConstructor, GenerateTopLevelVariable {
           .map(Future.value);
       return (await Future.wait(tasks)).joinAsComponent();
     }
-    throw Exception('returned value not constructor or set: $element');
+    throw Exception('not constructor or set: $element');
   }
 }
 

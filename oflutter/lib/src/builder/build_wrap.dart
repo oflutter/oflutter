@@ -18,7 +18,6 @@ class GenerateWrapLibrary extends Top2AnnotationGenerator {
   @override
   Iterable<GenerateOnAnnotationAnywhere> get generators => [
     const WrapGenerator(),
-    const BuildInWrapGenerator(),
   ];
 }
 
@@ -29,9 +28,14 @@ class WrapGenerator extends GenerateOnAnnotation
   @override
   TypeIdentifier get annotationType => GenerateWrap.$type;
 
-  String targetName(ConstantReader annotation) {
+  String $targetName(ConstantReader annotation) {
     return annotation.peek(GenerateWrap.$targetParameterName)?.stringValue ??
         const GenerateWrap().targetParameterName;
+  }
+
+  bool $removeDeprecated(ConstantReader annotation) {
+    return annotation.peek(GenerateWrap.$removeDeprecated)?.boolValue ??
+        const GenerateWrap().removeDeprecated;
   }
 
   FormalParameterElement targetParameter(
@@ -39,7 +43,7 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final targetName = this.targetName(annotation);
+    final targetName = $targetName(annotation);
     return element.formalParameters.firstWhere(
       (param) => param.name3 == targetName,
       orElse: () => throw Exception('no target $targetName on $element'),
@@ -82,8 +86,18 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final targetName = this.targetName(annotation);
-    return element.formalParameters.where((param) => param.name3 != targetName);
+    final targetName = $targetName(annotation);
+    final result = element.formalParameters.where((p) => p.name3 != targetName);
+    if (!$removeDeprecated(annotation)) return result;
+
+    final classE = element.enclosingElement2 as ClassElement2;
+    return result.where((param) {
+      if (!param.isInitializingFormal) return true;
+      if (classE.getField2(param.name3!) case final FieldElement2 field) {
+        return field.firstAnnotation($type$deprecated) == null;
+      }
+      return true;
+    });
   }
 
   @override
@@ -91,10 +105,7 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstructorElement2 element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) {
-    final targetName = this.targetName(annotation);
-    return element.formalParameters.where((param) => param.name3 != targetName);
-  }
+  ) => filterInputs(element, annotation, buildStep);
 
   @override
   FutureOr<GenerateComponentResult> generateOutputs(
@@ -102,10 +113,15 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final targetName = this.targetName(annotation);
+    final targetName = $targetName(annotation);
+    final isTargetNamed = element.formalParameters
+        .firstWhere((p) => p.name3 == targetName)
+        .isNamed;
+
     final result = await super.generateOutputs(element, annotation, buildStep);
     final prefix = result.content.isEmpty ? '' : ', ';
-    return result + GenerateComponentResult.content('$prefix$targetName: this');
+    final target = '${isTargetNamed ? '$targetName: ' : ''}this';
+    return result + GenerateComponentResult.content('$prefix$target');
   }
 
   @override
@@ -120,65 +136,4 @@ class WrapGenerator extends GenerateOnAnnotation
   FutureOr<GenerateComponentResult> generateOutput(
     FormalParameterElement element,
   ) => GenerateComponentResult.content('${element.name3}: ${element.name3}');
-}
-
-class BuildInWrapGenerator extends WrapGenerator
-    with GenerateTopLevelVariable, GenerateVariableEntries {
-  const BuildInWrapGenerator();
-
-  @override
-  TypeIdentifier get annotationType => GenerateBuildInWrap.$type;
-
-  @override
-  FutureOr<GenerateComponentResult> generateConstructor(
-    ConstructorElement2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) async {
-    final result = super.generateConstructor(element, annotation, buildStep);
-    final type = element.returnType.typeIdentifier;
-    const ignoreLints =
-        '// '
-        'ignore_for_file: unnecessary_import, '
-        'implementation_imports '
-        'generated.\n';
-
-    return (await result).appendDirectives({
-      ignoreLints,
-      if (!type.isDartCore) type.importExpression,
-    });
-  }
-
-  @override
-  FutureOr<GenerateComponentResult> generateTarget(
-    ConstructorElement2 element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-  ) {
-    final type = targetParameter(
-      element,
-      annotation,
-      buildStep,
-    ).type.typeIdentifier;
-
-    return GenerateComponentResult(
-      directives: {if (!type.isDartCore) type.importExpression},
-      content: type.name,
-    );
-  }
-
-  @override
-  FutureOr<(GenerateComponentResult, bool)> generateInput(
-    FormalParameterElement element,
-  ) {
-    final type = element.type.typeIdentifier;
-    final content = element.toString().unwrapCurlyBrace;
-    return (
-      GenerateComponentResult(
-        directives: {if (!type.isDartCore) type.importExpression},
-        content: content,
-      ),
-      element.isNamed,
-    );
-  }
 }
