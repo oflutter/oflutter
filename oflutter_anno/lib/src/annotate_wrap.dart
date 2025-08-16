@@ -3,6 +3,7 @@ import 'package:oflutter_name/annotation.dart';
 part 'annotate_wrap.name.g.dart';
 
 const wrap = GenerateWrap();
+const wrapBuildIn = GenerateBuildInWrap();
 
 @type
 class GenerateWrap {
@@ -30,4 +31,16 @@ class GenerateWrap {
   static const String $methodName = _$name$methodName;
   static const String $methodNamePrefix = _$name$methodNamePrefix;
   static const String $targetParameterName = _$name$targetParameterName;
+}
+
+@type
+class GenerateBuildInWrap extends GenerateWrap {
+  const GenerateBuildInWrap({
+    super.extensionName,
+    super.methodName,
+    super.methodNamePrefix,
+    super.targetParameterName,
+  });
+
+  static final TypeIdentifier $type = _$type$generateBuildInWrap;
 }

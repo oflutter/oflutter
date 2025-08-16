@@ -19,14 +19,12 @@ class GenerateWrapLibrary extends Top2AnnotationGenerator {
   @override
   Iterable<GenerateOnAnnotationAnywhere> get generators => [
     const WrapGenerator(),
+    const BuildInWrapGenerator(),
   ];
 }
 
 class WrapGenerator extends GenerateOnAnnotation
-    with
-        GenerateConstructor,
-        GenerateStreamConstructor,
-        GenerateTopLevelVariable {
+    with GenerateConstructor, GenerateStreamConstructor {
   const WrapGenerator();
 
   @override
@@ -37,21 +35,16 @@ class WrapGenerator extends GenerateOnAnnotation
         const GenerateWrap().targetParameterName;
   }
 
-  @override
-  FutureOr<GenerateComponentResult> generateTopLevelVariable(
-    TopLevelVariableElement2 element,
+  FormalParameterElement targetParameter(
+    ConstructorElement2 element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    switch (element.constantInitializer) {
-      case final ConstructorReference _:
-        if (element.computeConstantValue()?.toFunctionValue2()?.baseElement
-            case final ConstructorElement2 element) {
-          return generateConstructor(element, annotation, buildStep);
-        }
-        throw Exception('returned value not a constructor: $element');
-    }
-    return const GenerateComponentResult.content('// top level variable');
+    final targetName = this.targetName(annotation);
+    return element.formalParameters.firstWhere(
+      (param) => param.name3 == targetName,
+      orElse: () => throw Exception('no target $targetName on $element'),
+    );
   }
 
   @override
@@ -69,13 +62,9 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstructorElement2 element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) {
-    // todo: parse.
-    return const GenerateComponentResult(
-      directives: {"import 'package:flutter/widgets.dart';"},
-      content: 'Widget',
-    );
-  }
+  ) => GenerateComponentResult.content(
+    targetParameter(element, annotation, buildStep).type.toString(),
+  );
 
   @override
   FutureOr<GenerateComponentResult> generateMethodName(
@@ -124,7 +113,6 @@ class WrapGenerator extends GenerateOnAnnotation
   FutureOr<(GenerateComponentResult, bool)> generateInput(
     FormalParameterElement element,
   ) {
-    // todo: resolve types.
     final content = element.toString().unwrapCurlyBrace;
     return (GenerateComponentResult(content: content), element.isNamed);
   }
@@ -133,4 +121,81 @@ class WrapGenerator extends GenerateOnAnnotation
   FutureOr<GenerateComponentResult> generateOutput(
     FormalParameterElement element,
   ) => GenerateComponentResult.content('${element.name3}: ${element.name3}');
+}
+
+class BuildInWrapGenerator extends WrapGenerator with GenerateTopLevelVariable {
+  const BuildInWrapGenerator();
+
+  @override
+  TypeIdentifier get annotationType => GenerateBuildInWrap.$type;
+
+  @override
+  FutureOr<GenerateComponentResult> generateTopLevelVariable(
+    TopLevelVariableElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    switch (element.constantInitializer) {
+      case final ConstructorReference _:
+        if (element.computeConstantValue()?.toFunctionValue2()?.baseElement
+            case final ConstructorElement2 element) {
+          return generateConstructor(element, annotation, buildStep);
+        }
+        throw Exception('returned value not a constructor: $element');
+    }
+    return const GenerateComponentResult.content('// top level variable');
+  }
+
+  @override
+  FutureOr<GenerateComponentResult> generateConstructor(
+    ConstructorElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) async {
+    final result = super.generateConstructor(element, annotation, buildStep);
+    final type = element.returnType.typeIdentifier;
+    const ignoreLints =
+        '// '
+        'ignore_for_file: unnecessary_import, '
+        'implementation_imports '
+        'generated.\n';
+
+    return (await result).appendDirectives({
+      ignoreLints,
+      if (!type.isDartCore) type.importExpression,
+    });
+  }
+
+  @override
+  FutureOr<GenerateComponentResult> generateTarget(
+    ConstructorElement2 element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    final type = targetParameter(
+      element,
+      annotation,
+      buildStep,
+    ).type.typeIdentifier;
+
+    return GenerateComponentResult(
+      directives: {if (!type.isDartCore) type.importExpression},
+      content: type.name,
+    );
+  }
+
+  @override
+  FutureOr<(GenerateComponentResult, bool)> generateInput(
+    FormalParameterElement element,
+  ) {
+    final type = element.type.typeIdentifier;
+    final content = element.toString().unwrapCurlyBrace;
+    return (
+      GenerateComponentResult(
+        directives: {if (!type.isDartCore) type.importExpression},
+        content: content,
+      ),
+      element.isNamed,
+    );
+  }
 }

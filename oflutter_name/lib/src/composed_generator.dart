@@ -75,6 +75,20 @@ class GenerateComponentResult {
       content: content + other.content,
     );
   }
+
+  GenerateComponentResult appendDirective(String directive) {
+    return GenerateComponentResult(
+      directives: {...directives, directive},
+      content: content,
+    );
+  }
+
+  GenerateComponentResult appendDirectives(Set<String> directives) {
+    return GenerateComponentResult(
+      directives: {...this.directives, ...directives},
+      content: content,
+    );
+  }
 }
 
 extension JoinGenerateComponentResult on Iterable<GenerateComponentResult> {

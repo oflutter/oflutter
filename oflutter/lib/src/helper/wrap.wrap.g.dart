@@ -5,9 +5,13 @@
 // Generator: GenerateWrapLibrary
 // **************************************************************************
 
-import 'package:flutter/widgets.dart';
+// ignore_for_file: unnecessary_import, implementation_imports generated.
 
-extension $Wrap$Center on Widget {
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/basic.dart';
+import 'package:flutter/src/widgets/framework.dart';
+
+extension $Wrap$Center on Widget? {
   Center center({Key? key, double? widthFactor, double? heightFactor}) {
     return Center(
       key: key,

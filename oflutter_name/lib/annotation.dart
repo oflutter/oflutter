@@ -25,6 +25,9 @@ class TypeIdentifier {
   String get importExpression => "import '$lib';";
   String get exportExpression => "export '$lib' show $name;";
 
+  bool get isDartCore =>
+      lib.scheme == 'dart' && lib.pathSegments.firstOrNull == 'core';
+
   @override
   bool operator ==(Object other) {
     return other is TypeIdentifier && other.name == name && other.lib == lib;
