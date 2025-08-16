@@ -12,7 +12,7 @@ Builder wrapBuilder(BuilderOptions options) => LibraryBuilder(
   generatedExtension: '.wrap.g.dart',
 );
 
-class GenerateWrapLibrary extends Top2AnnotationGenerator {
+class GenerateWrapLibrary extends Top2AnnotationGenerator with PartGenerator {
   const GenerateWrapLibrary();
 
   @override
