@@ -12,12 +12,25 @@ Builder wrapBuilder(BuilderOptions options) => LibraryBuilder(
   generatedExtension: '.wrap.g.dart',
 );
 
+Builder buildInWrapBuilder(BuilderOptions options) => LibraryBuilder(
+  const GenerateBuildInWrapLibrary(),
+  generatedExtension: r'.$wrap.g.dart',
+);
+
 class GenerateWrapLibrary extends Top2AnnotationGenerator {
   const GenerateWrapLibrary();
 
   @override
   Iterable<GenerateOnAnnotationAnywhere> get generators => [
     const WrapGenerator(),
+  ];
+}
+
+class GenerateBuildInWrapLibrary extends TopAnnotationGenerator {
+  const GenerateBuildInWrapLibrary();
+
+  @override
+  Iterable<GenerateOnAnnotationAnywhere> get generators => [
     const BuildInWrapGenerator(),
   ];
 }
@@ -29,9 +42,14 @@ class WrapGenerator extends GenerateOnAnnotation
   @override
   TypeIdentifier get annotationType => GenerateWrap.$type;
 
-  String targetName(ConstantReader annotation) {
+  String $targetName(ConstantReader annotation) {
     return annotation.peek(GenerateWrap.$targetParameterName)?.stringValue ??
         const GenerateWrap().targetParameterName;
+  }
+
+  bool $removeDeprecated(ConstantReader annotation) {
+    return annotation.peek(GenerateWrap.$removeDeprecated)?.boolValue ??
+        const GenerateWrap().removeDeprecated;
   }
 
   FormalParameterElement targetParameter(
@@ -39,7 +57,7 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final targetName = this.targetName(annotation);
+    final targetName = $targetName(annotation);
     return element.formalParameters.firstWhere(
       (param) => param.name3 == targetName,
       orElse: () => throw Exception('no target $targetName on $element'),
@@ -82,8 +100,18 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final targetName = this.targetName(annotation);
-    return element.formalParameters.where((param) => param.name3 != targetName);
+    final targetName = $targetName(annotation);
+    final result = element.formalParameters.where((p) => p.name3 != targetName);
+    if (!$removeDeprecated(annotation)) return result;
+
+    final classE = element.enclosingElement2 as ClassElement2;
+    return result.where((param) {
+      if (!param.isInitializingFormal) return true;
+      if (classE.getField2(param.name3!) case final FieldElement2 field) {
+        return field.firstAnnotation($type$deprecated) == null;
+      }
+      return true;
+    });
   }
 
   @override
@@ -91,10 +119,7 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstructorElement2 element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) {
-    final targetName = this.targetName(annotation);
-    return element.formalParameters.where((param) => param.name3 != targetName);
-  }
+  ) => filterInputs(element, annotation, buildStep);
 
   @override
   FutureOr<GenerateComponentResult> generateOutputs(
@@ -102,7 +127,7 @@ class WrapGenerator extends GenerateOnAnnotation
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final targetName = this.targetName(annotation);
+    final targetName = $targetName(annotation);
     final isTargetNamed = element.formalParameters
         .firstWhere((p) => p.name3 == targetName)
         .isNamed;
@@ -128,7 +153,7 @@ class WrapGenerator extends GenerateOnAnnotation
 }
 
 class BuildInWrapGenerator extends WrapGenerator
-    with GenerateTopLevelVariable, GenerateVariableEntries {
+    with GenerateTopLevelVariable, GenerateVariableConstructorEntries {
   const BuildInWrapGenerator();
 
   @override
